@@ -510,6 +510,36 @@ hitButton.addEventListener('click', function(){
     }
 })
 
+var standButton = document.querySelector('#stand-button');
+
+standButton.addEventListener('click', function(){
+    while (calcPoints(dealerArray) <= 17){
+        dealerArray.push(deal())
+        var img = document.createElement("img");
+        img.src = dealerArray[dealerArray.length-1].pic;
+        img.setAttribute('class', 'height100')
+        dealerHand.appendChild(img);
+        dealerPoint.textContent = calcPoints(dealerArray).toString()
+    }
+    if (calcPoints(dealerArray) > calcPoints(playerArray) && calcPoints(dealerArray) <= 21){
+        var lose = document.createElement('div');
+        lose.setAttribute('class', 'busted bg-danger d-flex align-items-center justify-content-center')
+        lose.textContent = "You lose"
+        screen.appendChild(lose)
+    } else if(calcPoints(dealerArray) < calcPoints(playerArray)){
+        var win = document.createElement('div');
+        win.setAttribute('class', 'busted bg-danger d-flex align-items-center justify-content-center')
+        win.textContent = "You win"
+        screen.appendChild(win)
+    } else if (calcPoints(dealerArray) > 21){
+        var win = document.createElement('div');
+        win.setAttribute('class', 'busted bg-danger d-flex align-items-center justify-content-center')
+        win.textContent = "You win"
+        screen.appendChild(win)
+    }
+})
+
+
 
 
 

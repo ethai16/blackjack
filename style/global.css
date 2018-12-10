@@ -3,7 +3,7 @@ body{
     width:100vw;
 }
 .busted{
-    height:100vh;
+    height:10vh;
     width:100vw;
     z-index:10;
     position: absolute;
