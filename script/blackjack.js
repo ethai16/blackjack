@@ -2,16 +2,17 @@ var playerArray = [];
 var dealerArray = [];
 var deck = [];
 var shuffledDeck = [];
+var aceHand = []
 
 var aceOfHearts = {
-    point:1,
+    point:11,
     suit: 'hearts',
     pic: '/blackjack/JPEG/AH.jpg'
 };
 deck.push(aceOfHearts);
 
 var aceOfDiamonds = {
-    point:1,
+    point:11,
     suit:'diamonds',
     pic: '/blackjack/JPEG/AD.jpg'
 
@@ -19,7 +20,7 @@ var aceOfDiamonds = {
 deck.push(aceOfDiamonds)
 
 var aceOfClubs = {
-    point:1,
+    point:11,
     suit: 'clubs',
     pic: '/blackjack/JPEG/AC.jpg'
 
@@ -27,7 +28,7 @@ var aceOfClubs = {
 deck.push(aceOfClubs)
 
 var aceOfSpades = {
-    point:1,
+    point:11,
     suit: 'spades',
     pic: '/blackjack/JPEG/AS.jpg'
 }
@@ -443,11 +444,26 @@ function deal(){
 
 function calcPoints(array){
     var sum = 0;
+    var aceCount = 0;
+    var other = 0;
     for(var i = 0; i <array.length; i++){
         sum += array[i].point
-    }
+        if (array[i] == aceOfClubs || array[i] == aceOfDiamonds || array[i] == aceOfHearts || array[i] ==aceOfSpades){
+            aceCount++
+        }else {
+            other++
+        }
+        if (sum > 21){
+            if (array.includes(aceOfClubs)||array.includes(aceOfHearts)||array.includes(aceOfDiamonds)||array.includes(aceOfSpades)){
+                sum = sum - (aceCount*10)
+                aceCount = 0
+            }
+        }
+    }    
     return sum
 }
+
+
 
 function shuffleArray(array) {
     for (var i =array.length -1; i > 0; i--){
@@ -458,9 +474,51 @@ function shuffleArray(array) {
     }
     return array
 }
-shuffleArray(deck)
-console.log(deck)
 
+shuffleArray(deck)
+
+var replayButton = document.createElement('button');
+replayButton.setAttribute('id', 'replay-button');
+replayButton.textContent = "Replay"
+
+
+
+
+function bustFunc() {
+    var bust = document.createElement('div');
+    bust.setAttribute('class', 'pop-up busted bg-danger d-flex align-items-center justify-content-center')
+    bust.textContent = "You busted"
+    screen.appendChild(bust)
+    bust.appendChild(replayButton)
+}
+
+function loseFunc(){
+    var lose = document.createElement('div');
+    lose.setAttribute('class', 'pop-up busted bg-danger d-flex align-items-center justify-content-center')
+    lose.textContent = "You lose"
+    screen.appendChild(lose)
+    lose.appendChild(replayButton)
+
+    
+}
+
+function winFunc(){
+    var win = document.createElement('div');
+    win.setAttribute('class', 'pop-up busted bg-danger d-flex align-items-center justify-content-center')
+    win.textContent = "You win"
+    screen.appendChild(win)
+    win.appendChild(replayButton)
+
+}
+
+function tieFunc(){
+    var tie = document.createElement('div');
+    tie.setAttribute('class', 'pop-up busted bg-danger d-flex align-items-center justify-content-center')
+    tie.textContent = "It's a draw"
+    screen.appendChild(tie)
+    tie.appendChild(replayButton)
+
+}
 
 
 var dealButton = document.querySelector("#deal-button");
@@ -476,7 +534,7 @@ dealButton.addEventListener('click', function(){
         dealerArray.push(deal())
         var img = document.createElement("img");
         img.src = dealerArray[dealerArray.length-1].pic;
-        img.setAttribute('class', 'height100')
+        img.setAttribute('class', 'height100 cardIMG')
         dealerHand.appendChild(img);
     }
     dealerPoint.textContent = calcPoints(dealerArray).toString()
@@ -485,7 +543,7 @@ dealButton.addEventListener('click', function(){
         playerArray.push(deal())
         var img = document.createElement("img");
         img.src = playerArray[playerArray.length-1].pic;
-        img.setAttribute('class', 'height100')
+        img.setAttribute('class', 'height100 cardIMG')
         playerHand.appendChild(img);
     }
     playerPoint.textContent = calcPoints(playerArray).toString()
@@ -499,14 +557,11 @@ hitButton.addEventListener('click', function(){
     playerArray.push(deal())
     var img = document.createElement("img");
     img.src = playerArray[playerArray.length-1].pic;
-    img.setAttribute('class', 'height100')
+    img.setAttribute('class', 'height100 cardIMG')
     playerHand.appendChild(img);
     playerPoint.textContent = calcPoints(playerArray).toString()
     if (calcPoints(playerArray) > 21){
-        var bust = document.createElement('div');
-        bust.setAttribute('class', 'busted bg-danger d-flex align-items-center justify-content-center')
-        bust.textContent = "You busted"
-        screen.appendChild(bust)
+        bustFunc()
     }
 })
 
@@ -517,28 +572,38 @@ standButton.addEventListener('click', function(){
         dealerArray.push(deal())
         var img = document.createElement("img");
         img.src = dealerArray[dealerArray.length-1].pic;
-        img.setAttribute('class', 'height100')
+        img.setAttribute('class', 'height100 cardIMG')
         dealerHand.appendChild(img);
         dealerPoint.textContent = calcPoints(dealerArray).toString()
     }
     if (calcPoints(dealerArray) > calcPoints(playerArray) && calcPoints(dealerArray) <= 21){
-        var lose = document.createElement('div');
-        lose.setAttribute('class', 'busted bg-danger d-flex align-items-center justify-content-center')
-        lose.textContent = "You lose"
-        screen.appendChild(lose)
-    } else if(calcPoints(dealerArray) < calcPoints(playerArray)){
-        var win = document.createElement('div');
-        win.setAttribute('class', 'busted bg-danger d-flex align-items-center justify-content-center')
-        win.textContent = "You win"
-        screen.appendChild(win)
+        loseFunc();
+    } else if(calcPoints(dealerArray) < calcPoints(playerArray) && calcPoints(dealerArray) <= 21){
+        winFunc()
     } else if (calcPoints(dealerArray) > 21){
-        var win = document.createElement('div');
-        win.setAttribute('class', 'busted bg-danger d-flex align-items-center justify-content-center')
-        win.textContent = "You win"
-        screen.appendChild(win)
+        winFunc()
+    }else if (calcPoints(dealerArray) == calcPoints(playerArray) && dealerArray.length < playerArray.length){
+        loseFunc()
+    }else if (calcPoints(dealerArray) == calcPoints(playerArray) && dealerArray.length > playerArray.length){
+        winFunc()
+    }else{
+        tieFunc()
     }
 })
 
+
+replayButton.addEventListener('click', function(){
+
+    $('#dealerHand').empty()
+    $('#playerHand').empty()
+    $('#dealer-points').empty()
+    $('#player-points').empty()
+    $('#screen').empty()
+    dealerArray =[];
+    playerArray=[];
+    sum = 0;
+
+})
 
 
 
