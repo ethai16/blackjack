@@ -1,8 +1,25 @@
 var playerArray = [];
 var dealerArray = [];
-var deck = [];
+const deck = [];
 var shuffledDeck = [];
-var aceHand = []
+var bigDeck = [];
+var dealButton = document.querySelector("#deal-button");
+var dealerPoint = document.getElementById('dealer-points');
+var playerPoint = document.getElementById('player-points');
+var winCount = document.getElementById('win-count');
+var lossCount = document.getElementById('loss-count');
+var drawCount = document.getElementById('draw-count');
+var screen = document.getElementById('screen');
+var replayButton = document.createElement('button');
+replayButton.setAttribute('id', 'replay-button');
+replayButton.textContent = "Replay"
+var wins = 0
+var losses = 0
+var draws = 0
+document.getElementById('hit-button').disabled = true;
+document.getElementById('stand-button').disabled = true;
+
+
 
 var aceOfHearts = {
     point:11,
@@ -438,8 +455,17 @@ var kingOfSpades = {
 }
 deck.push(kingOfSpades)
 
+var duplicateDeck = deck
+
 function deal(){
     return deck.pop()
+}
+function threeDeck() {
+    for(var i =0; i<deck.length;i++ ){
+        bigDeck.push(deck[i]);
+        bigDeck.push(deck[i]);
+        bigDeck.push(deck[i]);
+    }
 }
 
 function calcPoints(array){
@@ -477,9 +503,8 @@ function shuffleArray(array) {
 
 shuffleArray(deck)
 
-var replayButton = document.createElement('button');
-replayButton.setAttribute('id', 'replay-button');
-replayButton.textContent = "Replay"
+
+
 
 
 
@@ -490,6 +515,9 @@ function bustFunc() {
     bust.textContent = "You busted"
     screen.appendChild(bust)
     bust.appendChild(replayButton)
+    document.getElementById('hit-button').disabled = true;
+    document.getElementById('stand-button').disabled = true;
+    losses++
 }
 
 function loseFunc(){
@@ -498,8 +526,8 @@ function loseFunc(){
     lose.textContent = "You lose"
     screen.appendChild(lose)
     lose.appendChild(replayButton)
+    losses++
 
-    
 }
 
 function winFunc(){
@@ -508,7 +536,7 @@ function winFunc(){
     win.textContent = "You win"
     screen.appendChild(win)
     win.appendChild(replayButton)
-
+    wins++
 }
 
 function tieFunc(){
@@ -517,19 +545,14 @@ function tieFunc(){
     tie.textContent = "It's a draw"
     screen.appendChild(tie)
     tie.appendChild(replayButton)
-
+    draws++
 }
 
 
-var dealButton = document.querySelector("#deal-button");
-var dealerPoint = document.getElementById('dealer-points');
-var playerPoint = document.getElementById('player-points');
-var screen = document.getElementById('screen')
-
-
-
 dealButton.addEventListener('click', function(){
-
+    document.getElementById("deal-button").disabled = true;
+    document.getElementById('hit-button').disabled = false;
+    document.getElementById('stand-button').disabled = false;
     for (var i = 0; i < 2; i++) {
         dealerArray.push(deal())
         var img = document.createElement("img");
@@ -562,12 +585,15 @@ hitButton.addEventListener('click', function(){
     playerPoint.textContent = calcPoints(playerArray).toString()
     if (calcPoints(playerArray) > 21){
         bustFunc()
+        lossCount.textContent = losses.toString()
     }
 })
 
 var standButton = document.querySelector('#stand-button');
 
 standButton.addEventListener('click', function(){
+    document.getElementById('hit-button').disabled = true;
+    document.getElementById('stand-button').disabled = true;
     while (calcPoints(dealerArray) <= 17){
         dealerArray.push(deal())
         var img = document.createElement("img");
@@ -578,19 +604,41 @@ standButton.addEventListener('click', function(){
     }
     if (calcPoints(dealerArray) > calcPoints(playerArray) && calcPoints(dealerArray) <= 21){
         loseFunc();
+        lossCount.textContent = losses.toString()
+
     } else if(calcPoints(dealerArray) < calcPoints(playerArray) && calcPoints(dealerArray) <= 21){
         winFunc()
+        winCount.textContent = wins.toString()
+
     } else if (calcPoints(dealerArray) > 21){
         winFunc()
+        winCount.textContent = wins.toString()
+
     }else if (calcPoints(dealerArray) == calcPoints(playerArray) && dealerArray.length < playerArray.length){
         loseFunc()
+        lossCount.textContent = losses.toString()
+
     }else if (calcPoints(dealerArray) == calcPoints(playerArray) && dealerArray.length > playerArray.length){
         winFunc()
+        winCount.textContent = wins.toString()
+
     }else{
         tieFunc()
+        drawCount.textContent = draws.toString()
+
     }
 })
 
+var betButton = document.querySelector('#bet-button');
+var betAmount = document.getElementById('wager').value
+
+betButton.addEventListener('click', function(){
+    var betAmount = document.getElementById('wager').value
+    if (isNaN(betAmount)){
+        alert("Must input numbers");
+        return false;
+    }
+})
 
 replayButton.addEventListener('click', function(){
 
@@ -599,14 +647,19 @@ replayButton.addEventListener('click', function(){
     $('#dealer-points').empty()
     $('#player-points').empty()
     $('#screen').empty()
-    dealerArray =[];
-    playerArray=[];
+    while (dealerArray.length != 0){
+        deck.push(dealerArray.pop())
+    }
+    while (playerArray.length != 0){
+        deck.push(playerArray.pop())
+    }
+    shuffleArray(deck)
     sum = 0;
-
+    document.getElementById("deal-button").disabled = false;
+    document.getElementById('hit-button').disabled = true;
+    document.getElementById('stand-button').disabled = true;
 })
 
 
 
 
-console.log(playerArray)
-console.log(dealerArray)

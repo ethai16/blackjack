@@ -3,10 +3,13 @@ body{
     width:100vw;
 }
 .busted{
-    height:10vh;
+    height:30vh;
     width:100vw;
     z-index:10;
     position: absolute;
+    display:flex;
+    flex-direction: column;
+    font-size: 30pt
 }
 
 
@@ -17,6 +20,11 @@ body{
 .tableSize{
     height:75%;
     width:75%;
+}
+
+.bookKeeping{
+    height: 75%;
+    width:20%;
 }
 
 .tableBorder{
@@ -43,5 +51,10 @@ body{
 
 .height100{
     height:100%;
+}
+
+img{
+    border-radius:10px;
+    margin-right:10px;
 }
 
