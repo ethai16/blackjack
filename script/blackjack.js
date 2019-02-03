@@ -9,6 +9,8 @@ var playerPoint = document.getElementById('player-points');
 var winCount = document.getElementById('win-count');
 var lossCount = document.getElementById('loss-count');
 var drawCount = document.getElementById('draw-count');
+var moneyCount = document.getElementById('money-accumulated');
+var wagerPlaced = document.getElementById('wager-placed')
 var screen = document.getElementById('screen');
 var replayButton = document.createElement('button');
 replayButton.setAttribute('id', 'replay-button');
@@ -16,6 +18,8 @@ replayButton.textContent = "Replay"
 var wins = 0
 var losses = 0
 var draws = 0
+var intAmount = 0
+document.cookie = ""
 document.getElementById('hit-button').disabled = true;
 document.getElementById('stand-button').disabled = true;
 
@@ -518,6 +522,7 @@ function bustFunc() {
     document.getElementById('hit-button').disabled = true;
     document.getElementById('stand-button').disabled = true;
     losses++
+    moneyCount.textContent = Number(moneyCount.textContent) - intAmount
 }
 
 function loseFunc(){
@@ -527,7 +532,7 @@ function loseFunc(){
     screen.appendChild(lose)
     lose.appendChild(replayButton)
     losses++
-
+    moneyCount.textContent = Number(moneyCount.textContent) - intAmount
 }
 
 function winFunc(){
@@ -537,6 +542,7 @@ function winFunc(){
     screen.appendChild(win)
     win.appendChild(replayButton)
     wins++
+    moneyCount.textContent = Number(moneyCount.textContent) + intAmount
 }
 
 function tieFunc(){
@@ -621,7 +627,6 @@ standButton.addEventListener('click', function(){
     }else if (calcPoints(dealerArray) == calcPoints(playerArray) && dealerArray.length > playerArray.length){
         winFunc()
         winCount.textContent = wins.toString()
-
     }else{
         tieFunc()
         drawCount.textContent = draws.toString()
@@ -630,13 +635,24 @@ standButton.addEventListener('click', function(){
 })
 
 var betButton = document.querySelector('#bet-button');
-var betAmount = document.getElementById('wager').value
 
 betButton.addEventListener('click', function(){
     var betAmount = document.getElementById('wager').value
+    intAmount = Number(betAmount)
     if (isNaN(betAmount)){
         alert("Must input numbers");
+        document.getElementById('wager').value = ''
         return false;
+    }else{
+        if (intAmount > Number(moneyCount.textContent)){
+            document.getElementById('wager').value = ''
+            alert('YOU DO NOT HAVE ENOUGH MONEY!')
+            intAmount = 0
+            return false;
+        }else{
+            wagerPlaced.textContent = betAmount
+            return intAmount
+        }
     }
 })
 
@@ -658,7 +674,12 @@ replayButton.addEventListener('click', function(){
     document.getElementById("deal-button").disabled = false;
     document.getElementById('hit-button').disabled = true;
     document.getElementById('stand-button').disabled = true;
+    if (Number(moneyCount.textContent) === 0){
+        alert("YOU DON'T HAVE ANY MORE MONEY! HERE'S A DOLLAR");
+        moneyCount.textContent = '1'
+    }
 })
+
 
 
 

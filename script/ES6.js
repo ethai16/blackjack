@@ -19,6 +19,9 @@ replayButton.setAttribute('id', 'replay-button');
 replayButton.textContent = "Replay"
 document.getElementById('hit-button').disabled = true;
 document.getElementById('stand-button').disabled = true;
+var moneyCount = document.getElementById('money-accumulated');
+var wagerPlaced = document.getElementById('wager-placed')
+
 
 var deck = [];
 var suits = ['H', 'D', 'C', 'S'];
@@ -70,7 +73,7 @@ shuffleArray(deck)
 
 
 var bustFunc = () => {
-    let bust = document.createElement('div');
+    var bust = document.createElement('div');
     bust.setAttribute('class', 'pop-up busted bg-danger d-flex align-items-center justify-content-center')
     bust.textContent = "You busted"
     screen.appendChild(bust)
@@ -78,26 +81,29 @@ var bustFunc = () => {
     document.getElementById('hit-button').disabled = true;
     document.getElementById('stand-button').disabled = true;
     losses++
+    moneyCount.textContent = Number(moneyCount.textContent) - intAmount
 }
 
-var loseFunc = () =>{
-    let lose = document.createElement('div');
+var loseFunc = () => {
+    var lose = document.createElement('div');
     lose.setAttribute('class', 'pop-up busted bg-danger d-flex align-items-center justify-content-center')
     lose.textContent = "You lose"
     screen.appendChild(lose)
     lose.appendChild(replayButton)
     losses++
-
+    moneyCount.textContent = Number(moneyCount.textContent) - intAmount
 }
 
 var winFunc = () => {
-    let win = document.createElement('div');
+    var win = document.createElement('div');
     win.setAttribute('class', 'pop-up busted bg-danger d-flex align-items-center justify-content-center')
     win.textContent = "You win"
     screen.appendChild(win)
     win.appendChild(replayButton)
     wins++
+    moneyCount.textContent = Number(moneyCount.textContent) + intAmount
 }
+
 
 var tieFunc = () => {
     let tie = document.createElement('div');
@@ -109,7 +115,7 @@ var tieFunc = () => {
 }
 
 
-dealButton.addEventListener('click', function(){
+dealButton.addEventListener('click', () => {
     document.getElementById("deal-button").disabled = true;
     document.getElementById('hit-button').disabled = false;
     document.getElementById('stand-button').disabled = false;
@@ -136,7 +142,7 @@ dealButton.addEventListener('click', function(){
 
 
 
-hitButton.addEventListener('click', function(){
+hitButton.addEventListener('click', () => {
     playerArray.push(deal())
     let img = document.createElement("img");
     img.src = playerArray[playerArray.length-1].pic;
@@ -150,7 +156,7 @@ hitButton.addEventListener('click', function(){
 })
 
 
-standButton.addEventListener('click', function(){
+standButton.addEventListener('click', () => {
     document.getElementById('hit-button').disabled = true;
     document.getElementById('stand-button').disabled = true;
     while (calcPoints(dealerArray) <= 17){
@@ -190,15 +196,27 @@ standButton.addEventListener('click', function(){
 
 
 
-betButton.addEventListener('click', function(){
-    let betAmount = document.getElementById('wager').value
+betButton.addEventListener('click',() => {
+    var betAmount = document.getElementById('wager').value
+    intAmount = Number(betAmount)
     if (isNaN(betAmount)){
-        alert("Must input numbers");
+        alert(`Must input numbers`);
+        document.getElementById('wager').value = ''
         return false;
+    }else{
+        if (intAmount > Number(moneyCount.textContent)){
+            document.getElementById('wager').value = ''
+            alert(`YOU DO NOT HAVE ENOUGH MONEY!`)
+            intAmount = 0
+            return false;
+        }else{
+            wagerPlaced.textContent = betAmount
+            return intAmount
+        }
     }
 })
 
-replayButton.addEventListener('click', function(){
+replayButton.addEventListener('click', ()=>{
 
     $('#dealerHand').empty()
     $('#playerHand').empty()
@@ -212,10 +230,14 @@ replayButton.addEventListener('click', function(){
         deck.push(playerArray.pop())
     }
     shuffleArray(deck)
+    sum = 0;
     document.getElementById("deal-button").disabled = false;
     document.getElementById('hit-button').disabled = true;
     document.getElementById('stand-button').disabled = true;
+    if (Number(moneyCount.textContent) === 0){
+        alert(`YOU DON'T HAVE ANY MORE MONEY! HERE'S A DOLLAR`);
+        moneyCount.textContent = `1`
+    }
 })
 
-console.log(deck)
 
