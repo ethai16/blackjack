@@ -556,6 +556,7 @@ function tieFunc(){
 
 
 dealButton.addEventListener('click', function(){
+    document.getElementById('bet-button').disabled = true;
     document.getElementById("deal-button").disabled = true;
     document.getElementById('hit-button').disabled = false;
     document.getElementById('stand-button').disabled = false;
@@ -657,7 +658,8 @@ betButton.addEventListener('click', function(){
 })
 
 replayButton.addEventListener('click', function(){
-
+    intAmount = 0
+    wagerPlaced.textContent = intAmount
     $('#dealerHand').empty()
     $('#playerHand').empty()
     $('#dealer-points').empty()
@@ -674,6 +676,7 @@ replayButton.addEventListener('click', function(){
     document.getElementById("deal-button").disabled = false;
     document.getElementById('hit-button').disabled = true;
     document.getElementById('stand-button').disabled = true;
+    document.getElementById('bet-button').disabled = false;
     if (Number(moneyCount.textContent) === 0){
         alert("YOU DON'T HAVE ANY MORE MONEY! HERE'S A DOLLAR");
         moneyCount.textContent = '1'
